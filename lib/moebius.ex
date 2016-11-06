@@ -16,8 +16,12 @@ defmodule Moebius do
   one command per query.
   """
   def run_with_psql(sql, opts) do
-    db = opts[:database] || opts[:db]
-    args = ["-d", db, "-c", sql, "--quiet", "--set", "ON_ERROR_STOP=1", "--no-psqlrc"]
+    db_params = if opts[:connection], do: get_connection(opts[:connection]), else: get_connection()
+    args = ["-c", sql, "--quiet", "--set", "ON_ERROR_STOP=1", "--no-psqlrc"] ++
+      (if db_params[:username], do: ["-U", db_params[:username]], else: []) ++
+      (if db_params[:hostname], do: ["-h", db_params[:hostame]], else: []) ++
+      (if db_params[:port], do: ["-p", db_params[:port]], else: []) ++
+      (if db_params[:database], do: ["-d", db_params[:database]], else: [])
     System.cmd "psql", args
   end
 

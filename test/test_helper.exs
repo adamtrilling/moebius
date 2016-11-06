@@ -71,4 +71,4 @@ create table sessions(
 create index idx_sessions_search on sessions using GIN(search);
 create index idx_sessions on sessions using GIN(body jsonb_path_ops);
 """
-Moebius.run_with_psql(schema_sql, db: "meebuss")
+Moebius.run_with_psql(schema_sql, connection: :test_db)
